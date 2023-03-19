@@ -1,36 +1,55 @@
 # Натуральные числа. Выводит на экран числа, содержащие хотя бы одну последовательность длиннее К подряд идущих одинаковых цифр.
 # Рядом с таким числом выводится повторяющаяся цифра (прописью) и количество повторений.
 
-k = int(input('Введите K: '))
-vocabulary = {'0': 'ноль', '1': 'один', '2': 'два', '3': 'три', '4': 'четыре', '5': 'пять', '6': 'шесть', '7': 'семь', '8': 'восемь', '9': 'девять'}
-buffer_len = 1 # размер буфера чтения
-work_buffer_len = buffer_len # длина рабочего буфера
-work_buffer = '' # рабочий буфер
-count = 0 # количество подряд идущих одинаковых цифр
-num = [] # полный список чисел из файла
-a = [] # список чисел, которые будут подходить под условие задачи
+# словарь с прописными цифрами
+digits = {
+    '0': 'ноль', '1': 'один', '2': 'два', '3': 'три', '4': 'четыре',
+    '5': 'пять', '6': 'шесть', '7': 'семь', '8': 'восемь', '9': 'девять'
+}
 
-with open('text.txt', 'r') as text:
-    buffer = text.read(buffer_len) # читаем первый блок
-    if not buffer:
-        print('Выбранный файл пустой.')
-    while buffer: # обрабатываем текущий блок
-        while buffer >= '0' and buffer <= '9':
-            work_buffer += buffer
-            buffer = text.read(buffer_len)
-        if work_buffer:
-            num.append(int(work_buffer))
-            for item in range(1, len(work_buffer)):
-                if work_buffer[item] == work_buffer[item - 1]:
-                    count += 1
-            if count > k:
-                a.append(int(work_buffer))
-        work_buffer = ''
-        buffer = text.read(buffer_len)
+k = int(input('Введите число k: '))
+numbers = []  # список с найденными в последовательности числами
 
-if len(num) == 0:
-    print('В файле нет подходящих под условие чисел')
-    quit()
+with open('data.txt', 'r') as input_file:
+    for row in input_file:  # читаем данные из файла
+        cur_number = ''
+        for letter in row:
+            if letter in digits.keys():
+                cur_number += letter
+            else:
+                # добавляем в список только числа длиннее k символов, не начинающиеся на 0
+                # меньше k гарантированно не подходят под условие задачи
+                if cur_number != '' and len(cur_number) > k and (not cur_number.startswith('0')):
+                    numbers.append(cur_number)
+                cur_number = ''
 
-print('Иходный список чисел: ', num)
-print('Список чисел, подходящих под условия: ', a)
+output_data = ''
+for num in numbers:
+    cur_digit = ''  # текущая цифра пустая
+    count = 0
+    i = 0  # счетчик нужен для определения последняя цифра или нет
+    for digit in num:
+        i += 1
+        if cur_digit == '':  # если повторяющиеся цифры не считали
+            count += 1  # увеличиваем счетчик
+            cur_digit = digit  # повторяющаяся цифра = текущей
+        else:  # если цифры уже находили
+            if digit == cur_digit:  # если текущая цифра совпадает с повторяющейся
+                if i != len(num):  # и цифра не последняя
+                    count += 1  # увеличиваем счетчик
+                else:  # если текущая цифра совпадает с повторяющейся и последняя
+                    count += 1  # увеличиваем счетчик
+                    if count > k:  # в последовательности больше k повторяющихся цифр?
+                        output_data += num + f' {digits[cur_digit]} {count} ' + '\n'
+            else:  # если текущая цифра не совпадает с повторяющейся
+                if count > k:  # найденных повторяющихся цифр больше k?
+                    # если да, то записываем само число цифрами и прописью с количеством повторений
+                    output_data += num + f' {digits[cur_digit]} {count} ' + '\n'
+                cur_digit = digit  # теперь искомая цифра - текущая
+                count = 1  # сбрасываем счетчик, т.к. это цифра и ее нужно тоже подсчитать, то начинаем с 1
+
+if not output_data:
+    print('В файле нет чисел, подходящих под условие')
+else:
+    print('Результат:')
+    print(output_data)
