@@ -11,7 +11,7 @@ k = int(input('Введите число k: '))
 
 numbers = []  # список с найденными в последовательности числами
 work_buffer = ''
-with open('data.txt') as input_file:
+with open('text.txt') as input_file:
     buffer = input_file.read(1)
     while buffer:
         work_buffer = ''
