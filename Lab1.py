@@ -28,7 +28,7 @@ with open('text.txt') as input_file:
         i = 0  # счетчик нужен для определения последняя цифра или нет
 
         for letter in work_buffer:
-            if letter not in digits.keys() or work_buffer[0] == '0':
+            if letter not in digits.keys():
                 break
             i += 1
             if cur_digit == '':  # если повторяющиеся цифры не считали
