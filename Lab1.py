@@ -8,48 +8,46 @@ digits = {
 }
 
 k = int(input('Введите число k: '))
+
 numbers = []  # список с найденными в последовательности числами
+work_buffer = ''
+with open('data.txt') as input_file:
+    buffer = input_file.read(1)
+    while buffer:
+        work_buffer = ''
+        while buffer != ' ':
+            work_buffer += buffer
+            buffer = input_file.read(1)
+            if not buffer:
+                break
+        buffer = input_file.read(1)
 
-with open('data.txt', 'r') as input_file:
-    for row in input_file:  # читаем данные из файла
-        cur_number = ''
-        for letter in row:
-            if letter in digits.keys() or letter == '-':
-                cur_number += letter
-            else:
-                # добавляем в список только числа длиннее k символов, не начинающиеся на 0
-                # меньше k гарантированно не подходят под условие задачи
-                if cur_number != '' and len(cur_number) > k and (not cur_number.startswith('0')) and (not cur_number.startswith('-')):
-                    numbers.append(cur_number)
-                cur_number = ''
+        output_data = ''
+        cur_digit = ''  # текущая цифра пустая
+        count = 0
+        i = 0  # счетчик нужен для определения последняя цифра или нет
 
-output_data = ''
-for num in numbers:
-    cur_digit = ''  # текущая цифра пустая
-    count = 0
-    i = 0  # счетчик нужен для определения последняя цифра или нет
-    for digit in num:
-        i += 1
-        if cur_digit == '':  # если повторяющиеся цифры не считали
-            count += 1  # увеличиваем счетчик
-            cur_digit = digit  # повторяющаяся цифра = текущей
-        else:  # если цифры уже находили
-            if digit == cur_digit:  # если текущая цифра совпадает с повторяющейся
-                if i != len(num):  # и цифра не последняя
-                    count += 1  # увеличиваем счетчик
-                else:  # если текущая цифра совпадает с повторяющейся и последняя
-                    count += 1  # увеличиваем счетчик
-                    if count > k:  # в последовательности больше k повторяющихся цифр?
-                        output_data += num + f' {digits[cur_digit]} {count} ' + '\n'
-            else:  # если текущая цифра не совпадает с повторяющейся
-                if count > k:  # найденных повторяющихся цифр больше k?
-                    # если да, то записываем само число цифрами и прописью с количеством повторений
-                    output_data += num + f' {digits[cur_digit]} {count} ' + '\n'
-                cur_digit = digit  # теперь искомая цифра - текущая
-                count = 1  # сбрасываем счетчик, т.к. это цифра и ее нужно тоже подсчитать, то начинаем с 1
+        for letter in work_buffer:
+            if letter not in digits.keys() or work_buffer[0] == '0':
+                break
+            i += 1
+            if cur_digit == '':  # если повторяющиеся цифры не считали
+                count += 1  # увеличиваем счетчик
+                cur_digit = letter  # повторяющаяся цифра = текущей
+            else:  # если цифры уже находили
+                if letter == cur_digit:  # если текущая цифра совпадает с повторяющейся
+                    if i != len(work_buffer):  # и цифра не последняя
+                        count += 1  # увеличиваем счетчик
+                    else:  # если текущая цифра совпадает с повторяющейся и последняя
+                        count += 1  # увеличиваем счетчик
+                        if count > k:  # в последовательности больше k повторяющихся цифр?
+                            output_data += work_buffer + f' {digits[cur_digit]} {count} '
+                else:  # если текущая цифра не совпадает с повторяющейся
+                    if count > k:  # найденных повторяющихся цифр больше k?
+                        # если да, то записываем само число цифрами и прописью с количеством повторений
+                        output_data += work_buffer + f' {digits[cur_digit]} {count} ' + '\n'
+                    cur_digit = letter  # теперь искомая цифра - текущая
+                    count = 1  # сбрасываем счетчик, т.к. это цифра и ее нужно тоже подсчитать, то начинаем с 1
 
-if not output_data:
-    print('В файле нет чисел, подходящих под условие')
-else:
-    print('Результат:')
-    print(output_data)
+        if output_data:
+            print(output_data)
