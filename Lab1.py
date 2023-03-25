@@ -2,20 +2,17 @@
 # Рядом с таким числом выводится повторяющаяся цифра (прописью) и количество повторений.
 
 # словарь с прописными цифрами
-digits = {
-    '0': 'ноль', '1': 'один', '2': 'два', '3': 'три', '4': 'четыре',
-    '5': 'пять', '6': 'шесть', '7': 'семь', '8': 'восемь', '9': 'девять'
-}
+digits = {'0': 'ноль', '1': 'один', '2': 'два', '3': 'три', '4': 'четыре', '5': 'пять', '6': 'шесть', '7': 'семь', '8': 'восемь', '9': 'девять',}
 
 k = int(input('Введите число k: '))
 
 numbers = []  # список с найденными в последовательности числами
 work_buffer = ''
-with open('text.txt') as input_file:
+with open('data.txt') as input_file:
     buffer = input_file.read(1)
     while buffer:
         work_buffer = ''
-        while buffer != ' ':
+        while buffer != ' ' and buffer != ',' and buffer != '!' and buffer != '"' and buffer != '?':
             work_buffer += buffer
             buffer = input_file.read(1)
             if not buffer:
@@ -26,9 +23,11 @@ with open('text.txt') as input_file:
         cur_digit = ''  # текущая цифра пустая
         count = 0
         i = 0  # счетчик нужен для определения последняя цифра или нет
+        work_buffer += ' '
 
         for letter in work_buffer:
-            if letter not in digits.keys():
+            if letter not in digits.keys() and letter != ' ':
+                output_data = ''
                 break
             i += 1
             if cur_digit == '':  # если повторяющиеся цифры не считали
@@ -50,4 +49,4 @@ with open('text.txt') as input_file:
                     count = 1  # сбрасываем счетчик, т.к. это цифра и ее нужно тоже подсчитать, то начинаем с 1
 
         if output_data:
-            print(output_data)
+            print(output_data, end='')
